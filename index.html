@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<title>Quiz Du Lịch Thế Giới</title>
+
+<style>
+body{
+font-family:Arial;
+background:linear-gradient(135deg,#4facfe,#00f2fe);
+text-align:center;
+color:white;
+margin:0;
+}
+
+.game{
+width:700px;
+margin:auto;
+margin-top:40px;
+background:rgba(0,0,0,0.35);
+padding:30px;
+border-radius:15px;
+}
+
+img{
+width:360px;
+height:230px;
+object-fit:cover;
+border-radius:12px;
+margin-bottom:15px;
+}
+
+.question{
+font-size:22px;
+margin-bottom:20px;
+}
+
+button{
+display:block;
+width:80%;
+margin:10px auto;
+padding:12px;
+font-size:16px;
+border:none;
+border-radius:10px;
+cursor:pointer;
+transition:0.2s;
+}
+
+button:hover{
+transform:scale(1.05);
+}
+
+.correct{
+background:#2ecc71;
+color:white;
+}
+
+.wrong{
+background:#e74c3c;
+color:white;
+}
+
+.win{
+display:none;
+padding:40px;
+}
+
+.confetti{
+position:fixed;
+width:10px;
+height:10px;
+top:-10px;
+animation:fall 3s linear infinite;
+}
+
+@keyframes fall{
+to{
+transform:translateY(100vh) rotate(720deg);
+}
+}
+</style>
+</head>
+
+<body>
+
+<div class="game" id="game">
+
+<h1>🌏 Quiz Địa Danh Du Lịch</h1>
+
+<img id="image">
+
+<div class="question" id="question"></div>
+
+<div id="answers"></div>
+
+</div>
+
+<div class="win" id="win">
+
+<h1>🏆 Chúc mừng!</h1>
+<h2>Bạn đã hoàn thành quiz</h2>
+<h3 id="scoreText"></h3>
+
+<button onclick="location.reload()">Chơi lại</button>
+
+</div>
+
+<audio id="correctSound" src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_4c8c1b4e0e.mp3"></audio>
+<audio id="wrongSound" src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_c8c8a73467.mp3"></audio>
+<audio id="winSound" src="https://cdn.pixabay.com/download/audio/2021/08/04/audio_0625c6f0b5.mp3"></audio>
+
+<script>
+
+const quiz=[
+
+{
+q:"Kinh thành Huế thuộc tỉnh nào của Việt Nam?",
+img:"https://cdn3.ivivu.com/2022/09/kinh-th%C3%A0nh-hu%E1%BA%BF-ivivu.jpeg",
+a:["Quảng Nam","Thừa Thiên Huế","Đà Nẵng","Quảng Bình"],
+correct:1
+},
+
+{
+q:"Kinh thành Huế từng là kinh đô của triều đại nào?",
+img:"https://admintruong.haiphong.shieldixcloud.com/UploadImages%2Fhaiphong%2Fthnguyenhue%2F2021_10%2Ftieu_su_vua_nguyen_hue%2Fquang-trung-1_1110202116.jpg?w=1130",
+a:["Triều Lý","Triều Nguyễn","Triều Trần","Triều Lê"],
+correct:1
+},
+
+{
+q:"Văn Miếu Quốc Tử Giám nằm ở thành phố nào?",
+img:"https://bizweb.dktcdn.net/thumb/grande/100/372/171/products/cau-1.jpg?v=1580997302560",
+a:["Huế","Hà Nội","Đà Nẵng","Hải Phòng"],
+correct:1
+},
+
+{
+q:"Nhà thờ Đức Bà nằm ở thành phố nào?",
+img:"https://cdn.xanhsm.com/2024/11/f5d8fc3e-nha-tho-duc-ba-thumbnail-min-1.jpg",
+a:["Hà Nội","Huế","TP Hồ Chí Minh","Đà Nẵng"],
+correct:2
+},
+
+{
+q:"Taj Mahal nằm ở quốc gia nào?",
+img:"https://media.architecturaldigest.com/photos/67acb9b0339bcbaaadeb91b5/16:9/w_2560%2Cc_limit/GettyImages-873536102.jpg",
+a:["Pakistan","Ấn Độ","Nepal","Thái Lan"],
+correct:1
+},
+
+{
+q:"Vạn Lý Trường Thành nằm ở quốc gia nào?",
+img:"https://ik.imagekit.io/tvlk/blog/2023/09/van-ly-truong-thanh-22.jpg",
+a:["Trung Quốc","Hàn Quốc","Nhật Bản","Mông Cổ"],
+correct:0
+},
+
+{
+q:"Đền Borobudur nằm ở quốc gia nào?",
+img:"https://www.migolatravel.com/wp-content/uploads/2016/03/den-borobudur.jpg",
+a:["Thái Lan","Indonesia","Ấn Độ","Campuchia"],
+correct:1
+},
+
+{
+q:"Tháp Eiffel nằm ở quốc gia nào?",
+img:"https://dulichviet.com.vn/images/bandidau/Eiffel-tour-phap.png",
+a:["Ý","Pháp","Đức","Tây Ban Nha"],
+correct:1
+},
+
+{
+q:"Đấu trường Colosseum nằm ở quốc gia nào?",
+img:"https://www.startravel.vn/upload/tintuc/kham-pha-dau-truong-La-Ma-Colosseum_12_5_2018_10_14_46.jpg",
+a:["Pháp","Ý","Hy Lạp","Tây Ban Nha"],
+correct:1
+},
+
+{
+q:"Nhà thờ Sagrada Familia nằm ở quốc gia nào?",
+img:"https://thvl.vn/wp-content/uploads/2023/10/V%C6%B0%C6%A1ng-cung-th%C3%A1nh-%C4%91%C6%B0%E1%BB%9Dng-Sagrada-Fam%C3%ADlia-ho%C3%A0n-th%C3%A0nh-sau-h%C6%A1n-140-n%C4%83m.jpg",
+a:["Pháp","Ý","Tây Ban Nha","Bồ Đào Nha"],
+correct:2
+}
+
+];
+
+let index=0;
+let score=0;
+let current;
+
+function nextQuestion(){
+
+if(index>=quiz.length){
+showWin();
+return;
+}
+
+current=quiz[index];
+
+document.getElementById("question").innerText=current.q;
+document.getElementById("image").src=current.img;
+
+let html="";
+
+current.a.forEach((ans,i)=>{
+html+=`<button id="btn${i}" onclick="check(${i})">${ans}</button>`;
+});
+
+document.getElementById("answers").innerHTML=html;
+
+index++;
+
+}
+
+function check(i){
+
+let btn=document.getElementById("btn"+i);
+
+if(i===current.correct){
+
+btn.classList.add("correct");
+document.getElementById("correctSound").play();
+score++;
+
+setTimeout(()=>{nextQuestion();},1000);
+
+}else{
+
+btn.classList.add("wrong");
+document.getElementById("wrongSound").play();
+
+setTimeout(()=>{
+btn.style.display="none";
+},500);
+
+}
+
+}
+
+function showWin(){
+
+document.getElementById("game").style.display="none";
+document.getElementById("win").style.display="block";
+
+document.getElementById("scoreText").innerText=
+"Bạn trả lời đúng "+score+" / "+quiz.length+" câu";
+
+document.getElementById("winSound").play();
+
+for(let i=0;i<80;i++){
+let c=document.createElement("div");
+c.className="confetti";
+c.style.left=Math.random()*100+"vw";
+c.style.background="hsl("+Math.random()*360+"deg,70%,60%)";
+c.style.animationDuration=2+Math.random()*3+"s";
+document.body.appendChild(c);
+}
+
+}
+
+nextQuestion();
+
+</script>
+
+</body>
+</html>
