@@ -83,10 +83,28 @@ transform:translateY(100vh) rotate(720deg);
 </head>
 
 <body>
-
+<audio id="bgMusic" loop>
+<source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" type="audio/mpeg">
+</audio>
 <div class="game" id="game">
 
 <h1>🌏 Quiz Địa Danh Du Lịch</h1>
+<button id="musicBtn" onclick="startMusic()" style="
+position:fixed;
+top:20px;
+right:20px;
+font-size:28px;
+width:60px;
+height:60px;
+border-radius:50%;
+border:none;
+cursor:pointer;
+background:white;
+box-shadow:0 3px 8px rgba(0,0,0,0.3);
+">
+🎵
+</button>
+
 
 <img id="image">
 
@@ -106,12 +124,48 @@ transform:translateY(100vh) rotate(720deg);
 
 </div>
 
-<audio id="correctSound" src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_4c8c1b4e0e.mp3"></audio>
-<audio id="wrongSound" src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_c8c8a73467.mp3"></audio>
-<audio id="winSound" src="https://cdn.pixabay.com/download/audio/2021/08/04/audio_0625c6f0b5.mp3"></audio>
+<audio id="correctSound" preload="auto">
+<source src="C:\Users\DELL\Downloads\tieng_vo_tay_tra_loi_Dung-www_tiengdong_com.mp3">
+</audio>
+
+<audio id="wrongSound" preload="auto">
+<source src="C:\Users\DELL\Downloads\Am_thanh_tra_loi_sai-www_tiengdong_com.mp3">
+</audio>
+
+<audio id="winSound" preload="auto">
+<source src="C:\Users\DELL\Downloads\Am_thanh_ve_dich_chien_thang-www_tiengdong_com.mp3">
+</audio>
+
+
 
 <script>
+let musicStarted = false;
 
+function startMusic(){
+
+let music = document.getElementById("bgMusic");
+let btn = document.getElementById("musicBtn");
+
+if(!musicStarted){
+
+music.volume = 0.4;
+
+music.play().then(()=>{
+btn.innerHTML="🔊";
+musicStarted = true;
+}).catch(err=>{
+console.log("Audio bị chặn:",err);
+});
+
+}else{
+
+music.pause();
+btn.innerHTML="🎵";
+musicStarted = false;
+
+}
+
+}
 const quiz=[
 
 {
